@@ -13,12 +13,11 @@ public:
 
     void run();
     void sendResponse(const std::vector<uint16_t> &channels);
-    
 
 private:
     int sockfd;
     struct sockaddr_in servaddr, cliaddr;
-    //CRSF crsf;
+    CRSF crsf;
 };
 
 #endif // UDP_SERVER_H

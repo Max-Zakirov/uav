@@ -1,13 +1,14 @@
-#include "CegLaApplication.h"
+#include "CegleApp.h"
+#include "CeglePacket.h"
 
-char UDPClient::getKeypress() {
-    struct termios oldt, newt;
-    char ch;
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    return ch;
+void CegleApp::run() {
+    std::cout << "Press W/A/S/D to send commands. Press 'q' to quit.\n";
+
+    while (true) {
+        char key = keyboardManager.getKeypress();
+        if (key == 'q') break;
+        CeglePacket packet{PROTOCOL_TYPE_CRSF, key};
+        packet.key = key;
+        client.sendCeglePacket(packet);
+    }
 }

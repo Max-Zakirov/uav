@@ -12,11 +12,11 @@ public:
     
     ~CeglePacket();
 
-    CeglePacket pack(std::array<uint8_t, PACKET_SIZE data);
+    CeglePacket pack(std::array<uint8_t, 2> data);
 
-    std::array<uint8_t, PACKET_SIZE unpack();
+    std::array<uint8_t, 2> unpack();
     
     private:
     uint8_t protocolType;
     char key;
-}
+};

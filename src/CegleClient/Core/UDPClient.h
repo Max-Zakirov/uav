@@ -1,8 +1,8 @@
-#ifndef UDP_CLIENT_H
-#define UDP_CLIENT_H
+#pragma once
 
-#include <arpa/inet.h>
 #include "CeglePacket/CeglePacket.h"
+#include <string>
+#include <arpa/inet.h>
 
 class UDPClient {
 public:
@@ -15,5 +15,3 @@ private:
     int sockfd;
     sockaddr_in servaddr;
 };
-
-#endif // UDP_CLIENT_H

@@ -1,7 +1,7 @@
-#include "KeyManager.h"
+#include "KeyboardManager.h"
 #include "termio.h"
 
-char KeyManager::getKeypress() {
+char KeyboardManager::getKeypress() {
 
     struct termios oldt, newt;
     char ch;

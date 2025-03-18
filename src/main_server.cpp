@@ -2,6 +2,6 @@
 
 int main() {
     UDPServer server(8080);
-    server.start();
+    server.run();
     return 0;
 }

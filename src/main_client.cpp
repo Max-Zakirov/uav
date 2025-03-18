@@ -1,5 +1,4 @@
-#include "UDPClient.h"
-#include <iostream>
+#include "CegleClient/Core/CegleApp.h"
 
 int main() {
     UDPClient client("127.0.0.1", 8080); // Replace with actual RPi IP

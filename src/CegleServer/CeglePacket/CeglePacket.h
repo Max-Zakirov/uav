@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 #define PROTOCOL_TYPE_CRSF 0x01
-#define PACKET_SIZE> 2
-#define MAX_PACKET_SIZE> 1024
+#define PACKET_SIZE 2
+#define MAX_PACKET_SIZE 1024
 
 class CeglePacket {
 public:
@@ -16,7 +16,7 @@ public:
 
     static CeglePacket pack(std::array<uint8_t, PACKET_SIZE> data);
 
-    std::array<uint8_t, PACKET_SIZE>> unpack();
+    std::array<uint8_t, PACKET_SIZE> unpack();
     
     private:
     uint8_t protocolType;

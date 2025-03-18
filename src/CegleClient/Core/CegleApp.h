@@ -1,14 +1,16 @@
-#ifndef CEGLA_APPLICATION_H
-#define CEGLA_APPLICATION_H
+#pragma once
 
-class CegLaApplication {
+#include "UDPClient.h"
+#include "KeyboardManager.h"
 
+class CegleApp {
 public:
-    CegLaApplication();
-    ~CegLaApplication();
+    CegleApp();
+    ~CegleApp();
 
-    void getKeypress();
+    void run();
+
+private:
+    KeyboardManager keyboardManager;
+    UDPClient client;
 };
-
-
-#endif // CEGLA_APPLICATION_H

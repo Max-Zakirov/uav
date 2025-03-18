@@ -20,7 +20,7 @@ UDPClient::~UDPClient() {
 }
 
 void UDPClient::sendCeglePacket(CeglePacket packet) {
-    std::array<uint8_t, PACKET_SIZE data = packet.unpack();
+    std::array<uint8_t, 2> data = packet.unpack();
 
     sendto(sockfd, data.data(), data.size(), MSG_CONFIRM, 
            (const struct sockaddr *)&servaddr, sizeof(servaddr));
