@@ -1,5 +1,9 @@
 #include "UDPServer.h"
+#include "CeglePacket/CeglePacket.h"
+
 #include <unistd.h>
+#include <stdint.h>
+#include <array>
 
 UDPServer::UDPServer(int port) {
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -21,13 +25,12 @@ UDPServer::UDPServer(int port) {
 UDPServer::~UDPServer() {
     close(sockfd);
 }
-
-void UDPServer::start() {
-    char buffer[1024];
+void UDPServer::run() {
+    std::array<uint8_t, MAX_PACKET_SIZE>> buffer;
     socklen_t len = sizeof(cliaddr);
 
     while (true) {
-        int n = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, 
+        int n = recvfrom(sockfd, buffer.data(), sizeof(buffer), MSG_WAITALL, 
                          (struct sockaddr *)&cliaddr, &len);
         
         if (n < 2) { // Ignore invalid packets
@@ -35,17 +38,6 @@ void UDPServer::start() {
             continue;
         }
 
-        uint8_t receivedCRC = buffer[n - 1]; // Last byte is CRC
-        std::vector<uint8_t> data(buffer, buffer + n - 1);
-        uint8_t computedCRC = crsf.calculateCRC8(data);
-
-        // Validate CRC
-        bool crcValid = (computedCRC == receivedCRC);
-        std::cout << "Received: " << buffer[0] 
-                  << " | CRC: " << (crcValid ? "VALID" : "INVALID") << std::endl;
-
-        if (crcValid) {
-            // Process CRSF mapping
             crsf.mapKeyToChannel(buffer[0]); 
             std::vector<uint16_t> channels = crsf.getChannels();
 
@@ -55,7 +47,6 @@ void UDPServer::start() {
                 std::cout << "Ch" << i << ":" << channels[i] << " ";
             }
             std::cout << std::endl;
-        }
 
         // Send response back
         std::string response = "Key received: ";

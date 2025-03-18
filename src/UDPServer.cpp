@@ -22,7 +22,7 @@ UDPServer::~UDPServer() {
     close(sockfd);
 }
 
-void UDPServer::start() {
+void UDPServer::run() {
     char buffer[1024];
     socklen_t len = sizeof(cliaddr);
 

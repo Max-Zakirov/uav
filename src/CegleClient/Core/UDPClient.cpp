@@ -1,6 +1,7 @@
 #include "UDPClient.h"
 #include <unistd.h>
 #include <termios.h>
+#include <iostream>
 
 UDPClient::UDPClient(const std::string& serverIP, int port) {
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -18,10 +19,8 @@ UDPClient::~UDPClient() {
     close(sockfd);
 }
 
-void UDPClient::sendKey(char key) {
-    std::vector<uint8_t> data = {static_cast<uint8_t>(key)};
-    uint8_t crc = crsf.calculateCRC8(data);
-    data.push_back(crc);
+void UDPClient::sendCeglePacket(CeglePacket packet) {
+    std::array<uint8_t, PACKET_SIZE data = packet.unpack();
 
     sendto(sockfd, data.data(), data.size(), MSG_CONFIRM, 
            (const struct sockaddr *)&servaddr, sizeof(servaddr));
@@ -34,15 +33,3 @@ void UDPClient::sendKey(char key) {
     std::cout << "Server: " << buffer << std::endl;
 }
 
-// ✅ Capture keypresses without pressing Enter
-char UDPClient::getKeypress() {
-    struct termios oldt, newt;
-    char ch;
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    return ch;
-}
