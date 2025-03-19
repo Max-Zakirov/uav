@@ -2,8 +2,8 @@
 
 class KeyboardManager {
 public:
-    KeyboardManager();
-    ~KeyboardManager();
+    KeyboardManager() {}
+    ~KeyboardManager() {}
 
     char getKeypress();
 };

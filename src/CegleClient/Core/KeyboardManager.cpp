@@ -1,5 +1,8 @@
 #include "KeyboardManager.h"
-#include "termio.h"
+
+#include <termio.h>
+#include <iostream>
+#include <unistd.h>
 
 char KeyboardManager::getKeypress() {
 

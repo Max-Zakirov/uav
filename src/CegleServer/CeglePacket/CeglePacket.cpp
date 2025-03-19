@@ -1,7 +1,7 @@
 #include "CeglePacket.h"
 
 CeglePacket::CeglePacket() {
-    protocolType = PROTOCOL_TYPE_CRSF;
+    protocolType = PROTOCOL_TYPE_SBUS;
     key = 0;
 }
 

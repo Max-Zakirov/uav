@@ -3,20 +3,20 @@
 #include <array>
 #include <stdint.h>
 
-#define PROTOCOL_TYPE_CRSF 0x01
+#define PROTOCOL_TYPE_SBUS 0x01
+#define PACKET_SIZE 2
+#define MAX_PACKET_SIZE 1024
 
-class CeglePacket {
-public:
+struct CeglePacket {
     CeglePacket();
     CeglePacket(uint8_t protocolType, char key);
     
-    ~CeglePacket();
+    ~CeglePacket() {}
 
-    CeglePacket pack(std::array<uint8_t, 2> data);
+    static CeglePacket pack(std::array<uint8_t, PACKET_SIZE> data);
 
-    std::array<uint8_t, 2> unpack();
+    std::array<uint8_t, PACKET_SIZE> unpack();
     
-    private:
     uint8_t protocolType;
     char key;
 };

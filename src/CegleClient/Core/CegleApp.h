@@ -5,8 +5,10 @@
 
 class CegleApp {
 public:
-    CegleApp();
-    ~CegleApp();
+    CegleApp() = delete;
+    CegleApp(const std::string& serverIP, int serverPort);
+    
+    ~CegleApp() {}
 
     void run();
 

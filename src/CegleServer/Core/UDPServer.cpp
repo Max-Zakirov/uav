@@ -1,11 +1,12 @@
 #include "UDPServer.h"
-#include "CeglePacket/CeglePacket.h"
+#include "CeglePacket.h"
 
 #include <unistd.h>
 #include <stdint.h>
 #include <array>
 
 UDPServer::UDPServer(int port) {
+    /* Init UDP Server */
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
         perror("Socket creation failed");
@@ -22,25 +23,11 @@ UDPServer::UDPServer(int port) {
     }
 }
 
-// const string UART_PORT = "/dev/ttyAMA0";
-// const uint32_t UART_BAUDRATE = 115200;
-
-// serial::Serial uart(UART_PORT, UART_BAUDRATE, serial::Timeout::simpleTimeout(1000));
-
-// while (1) {
-//   CRSF *buffer = socket.receive_from();
-
-//   if (buffer) {
-//     uart.write(crsf_packet);
-//     std::cout << "CRSF sent via UART, size: " << crsf_packet.size() << " bytes." << std::endl;
-//   }
-//   std::this_thread::sleep_for(std::chrono::milliseconds(10));
-// }
-
 UDPServer::~UDPServer() {
     close(sockfd);
 }
-void UDPServer::run() {
+
+void UDPServer::serveForever() {
     std::array<uint8_t, MAX_PACKET_SIZE> buffer;
     socklen_t len = sizeof(cliaddr);
 
@@ -48,31 +35,32 @@ void UDPServer::run() {
         int n = recvfrom(sockfd, buffer.data(), sizeof(buffer), MSG_WAITALL, 
                          (struct sockaddr *)&cliaddr, &len);
         
-        if (n < 2) { // Ignore invalid packets
+        if (n < 2) {
             std::cout << "Received invalid packet\n";
             continue;
         }
         
-        /* conver CeglePacket into CRSF/SMTH */
-        crsf.mapKeyToChannel(buffer[1]);
-        std::vector<uint16_t> channels = crsf.getChannels();
-
-        std::array<uint8_t, CRSF_SIZE> packet = crsf.unpack();
-
-        /* UART.send() */
-
-        // Print CRSF Channel Values
-        std::cout << "Mapped Channels: ";
-        for (size_t i = 0; i < channels.size(); i++) {
-            std::cout << "Ch" << i << ":" << channels[i] << " ";
-        }
-        std::cout << std::endl;
-
-        // Send response back
+        /* conver CeglePacket into SBUS/SMTH */
+        sbus.mapKeyToChannel(buffer[1]);
+        std::vector<uint16_t> channels = sbus.getChannels();
         std::string response = "Key received: ";
-        response += buffer[0];
+        response += buffer[1];
+
+        response += " | Mapped Channels: ";
+
+        for (size_t i = 0; i < channels.size(); i++) {
+            response += "ch" + std::to_string(i) + ":" + std::to_string(channels[i]) + " ";
+        }
 
         sendto(sockfd, response.c_str(), response.length(), MSG_CONFIRM, 
                (const struct sockaddr *)&cliaddr, len);
+
+        /* Prepare SBUS Packet for UART transmitting to FC (Flight Controller) */
+        std::array<uint8_t, SBUS_SIZE> packet = sbus.unpack();
+
+        /* Sending data to STM32F4xxx FC with SBUS RX set on */
+        if (!packet.empty()) {
+            uart.writeData(packet.data(), packet.size());
+        }
     }
 }

@@ -1,0 +1,28 @@
+CXX = g++
+CXXFLAGS = -std=c++11 -ICeglePacket -ICore
+LDFLAGS = 
+SRC_DIR = .
+OBJ_DIR = build
+OUT = cegle-client
+
+SRC = $(shell find $(SRC_DIR)/CeglePacket $(SRC_DIR)/Core -name '*.cpp')
+
+SRC += $(SRC_DIR)/main.cpp
+
+OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+
+CORE_OBJ_DIR = $(OBJ_DIR)/Core
+CEGLE_PACKET_OBJ_DIR = $(OBJ_DIR)/CeglePacket
+
+$(shell mkdir -p $(CEGLE_PACKET_OBJ_DIR) $(CORE_OBJ_DIR))
+
+all: $(OUT)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OUT): $(OBJ)
+	$(CXX) $(OBJ) $(LDFLAGS) -o $(OUT)
+
+clean:
+	rm -rf $(OBJ_DIR) $(OUT)
