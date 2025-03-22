@@ -1,6 +1,8 @@
 #include "UDPServer.h"
 #include "CeglePacket.h"
 
+#include <thread>
+#include <chrono>
 #include <unistd.h>
 #include <stdint.h>
 #include <array>
@@ -21,6 +23,11 @@ UDPServer::UDPServer(int port) {
         perror("Bind failed");
         exit(EXIT_FAILURE);
     }
+
+    /* Opend periodic thread */
+    std::thread periodicThread(&UDPServer::sendPeriodicMessage, this);
+    
+    periodicThread.detach();
 }
 
 UDPServer::~UDPServer() {
@@ -40,9 +47,11 @@ void UDPServer::serveForever() {
             continue;
         }
         
-        /* conver CeglePacket into SBUS/SMTH */
-        sbus.mapKeyToChannel(buffer[1]);
-        std::vector<uint16_t> channels = sbus.getChannels();
+        /* conver CeglePacket into SBUS/CRSF */
+        crsf.mapKeyToChannel(buffer[1]);
+
+        /* Debug */
+        auto channels = crsf.getChannels();
         std::string response = "Key received: ";
         response += buffer[1];
 
@@ -52,15 +61,21 @@ void UDPServer::serveForever() {
             response += "ch" + std::to_string(i) + ":" + std::to_string(channels[i]) + " ";
         }
 
-        sendto(sockfd, response.c_str(), response.length(), MSG_CONFIRM, 
-               (const struct sockaddr *)&cliaddr, len);
+        sendto(sockfd, response.c_str(), response.length(), MSG_CONFIRM, (const struct sockaddr *)&cliaddr, len);
+    }
+}
 
-        /* Prepare SBUS Packet for UART transmitting to FC (Flight Controller) */
-        std::array<uint8_t, SBUS_SIZE> packet = sbus.unpack();
+void UDPServer::sendPeriodicMessage() {
+    /* Prepare SBUS Packet for UART transmitting to FC (Flight Controller) */
+
+    while (true) {
+        std::array<uint8_t, CRSF_SIZE> packet = crsf.unpack();
 
         /* Sending data to STM32F4xxx FC with SBUS RX set on */
         if (!packet.empty()) {
             uart.writeData(packet.data(), packet.size());
         }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 }

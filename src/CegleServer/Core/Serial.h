@@ -1,6 +1,6 @@
 #pragma once
 
-#define SBUS_BAUDRATE 100000
+#define SBUS_BAUDRATE 420000
 
 class Serial {
 public:

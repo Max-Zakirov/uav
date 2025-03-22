@@ -2,6 +2,7 @@
 #define UDP_SERVER_H
 
 #include "SBUS.h"
+#include "CRSF.h"
 #include "Serial.h"
 
 #include <iostream>
@@ -17,11 +18,12 @@ public:
     ~UDPServer();
 
     void serveForever();
+    void sendPeriodicMessage();
 
 private:
     int sockfd;
     struct sockaddr_in servaddr, cliaddr;
-    SBUS sbus{};
+    CRSF crsf{};
     Serial uart{UART_PORT};
 };
 

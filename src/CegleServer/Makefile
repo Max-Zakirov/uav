@@ -1,11 +1,11 @@
-CXX = g++
-CXXFLAGS = -std=c++11 -ICeglePacket -ICore
-LDFLAGS =
+CXX = arm-linux-gnueabihf-g++
+CXXFLAGS = -std=c++11 -ICeglePacket -ICore -IProtocols
+LDFLAGS = -static
 SRC_DIR = .
 OBJ_DIR = build
 OUT = cegle-server
 
-SRC = $(shell find $(SRC_DIR)/CeglePacket $(SRC_DIR)/Core -name '*.cpp')
+SRC = $(shell find $(SRC_DIR)/CeglePacket $(SRC_DIR)/Core $(SRC_DIR)/Protocols -name '*.cpp')
 
 SRC += $(SRC_DIR)/main.cpp
 
@@ -13,8 +13,9 @@ OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 CORE_OBJ_DIR = $(OBJ_DIR)/Core
 CEGLE_PACKET_OBJ_DIR = $(OBJ_DIR)/CeglePacket
+PROTOCOLS_OBJ_DIR = $(OBJ_DIR)/Protocols
 
-$(shell mkdir -p $(CEGLE_PACKET_OBJ_DIR) $(CORE_OBJ_DIR))
+$(shell mkdir -p $(CEGLE_PACKET_OBJ_DIR) $(CORE_OBJ_DIR) $(PROTOCOLS_OBJ_DIR))
 
 all: $(OUT)
 
