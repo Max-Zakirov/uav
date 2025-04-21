@@ -1,6 +1,9 @@
 #include "CRSF.h"
 #include <iostream>
 
+const uint8_t CRSF::LINK_STATISTICS_PACKET[CRSF::LINK_STATISTICS_PACKET_SIZE] = 
+        {0xc8, 0x0c, 0x14, 0xce, 0xce, 0x64, 0x0a, 0x00, 0x02, 0xce, 0x64, 0x0a, 0x00, 0xD0};
+
 /* CRC8 implementation with polynom = x7+ x6+ x4+ x2+ x0 (0xD5) */
 unsigned char crc8tab[256] = {
     0x00, 0xD5, 0x7F, 0xAA, 0xFE, 0x2B, 0x81, 0x54, 0x29, 0xFC, 0x56, 0x83, 0xD7, 0x02, 0xA8, 0x7D,
@@ -30,14 +33,22 @@ uint8_t crc8(const uint8_t *ptr, uint8_t len)
     return crc;
 }
 
-CRSF::CRSF()
-{
-    channels.resize(16, 992); // Initialize all channels to neutral value
+uint8_t CRSF::computeCRC(const uint8_t *data, size_t lenght) {
+    uint8_t crc = 0;
+    for (uint8_t i = 0; i < lenght; i++)
+    {
+        crc = crc8tab[crc ^ *data++];
+    }
+    return crc;
+}
+
+CRSF::CRSF() {
+    channels.fill(992);
 
     // Define key mappings for control inputs
-    keyMap['w'] = 0; // Throttle (Channel 0)
+    keyMap['w'] = 0;
     keyMap['s'] = 0;
-    keyMap['a'] = 1; // Roll (Channel 1)
+    keyMap['a'] = 1;
     keyMap['d'] = 1;
     keyMap['r'] = 2;
     keyMap['f'] = 2;
@@ -47,10 +58,8 @@ CRSF::CRSF()
     keyMap['x'] = 4;
 }
 
-std::array<uint8_t, CRSF_SIZE> CRSF::unpack()
+const std::array<uint8_t, CRSF_SIZE>& CRSF::pack()
 {
-    std::array<uint8_t, CRSF_SIZE> packet{};
-    /* */
     packet[0] = CRSF_TX_ADDR;
     packet[1] = CRSF_PAYLOAD_SIZE;
     packet[2] = CRSF_RC_PACKET;
@@ -78,7 +87,7 @@ std::array<uint8_t, CRSF_SIZE> CRSF::unpack()
     packet[23] = (((channels[14] & 0x07FF) >> 6) | ((channels[15] & 0x07FF) << 5) & 0xFF);
     packet[24] = ((channels[15] & 0x07FF) >> 3) & 0xFF;
 
-    packet[25] = crc8(&packet[2], 23);
+    packet[25] = computeCRC(&packet[2], CRSF_PAYLOAD_SIZE - 1);
 
     return packet;
 }
@@ -131,7 +140,7 @@ void CRSF::mapKeyToChannel(char key)
     }
 }
 
-std::vector<int> CRSF::getChannels() const
+std::array<int, CRSF_CHANNELS_AMOUT> CRSF::getChannels() const
 {
     return channels;
 }

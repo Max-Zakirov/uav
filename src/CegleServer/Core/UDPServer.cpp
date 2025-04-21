@@ -66,16 +66,24 @@ void UDPServer::serveForever() {
 }
 
 void UDPServer::sendPeriodicMessage() {
-    /* Prepare SBUS Packet for UART transmitting to FC (Flight Controller) */
+    /* CRSF Packet for UART transmitting to FC (Flight Controller) */
+    int periodCounter = 0;
 
     while (true) {
-        std::array<uint8_t, CRSF_SIZE> packet = crsf.unpack();
+        auto& packet = crsf.pack();
 
-        /* Sending data to STM32F4xxx FC with SBUS RX set on */
-        if (!packet.empty()) {
-            uart.writeData(packet.data(), packet.size());
+        /* Link Statistics packet is REQUIRED by CRSF to make FC think network link is up and ready to work */
+        if (periodCounter % CRSF::LINK_STATISTICS_PACKET_FREQUENCY == 0) {
+            uart.writeData(CRSF::LINK_STATISTICS_PACKET, CRSF::LINK_STATISTICS_PACKET_SIZE);
+        }
+        else {
+            /* Sending data to STM32F4xxx FC with SBUS RX set on */
+            if (!packet.empty()) {
+                uart.writeData(packet.data(), packet.size());
+            }
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        periodCounter++;
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 }

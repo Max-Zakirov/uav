@@ -1,4 +1,5 @@
 CXX = arm-linux-gnueabihf-g++
+#CXX = g++
 CXXFLAGS = -std=c++11 -ICeglePacket -ICore -IProtocols
 LDFLAGS = -static
 SRC_DIR = .
