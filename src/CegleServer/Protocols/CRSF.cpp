@@ -44,6 +44,8 @@ uint8_t CRSF::computeCRC(const uint8_t *data, size_t lenght) {
 
 CRSF::CRSF() {
     channels.fill(992);
+    /* Trottle initial value? */
+    channels[2] = 100;
 
     // Define key mappings for control inputs
     keyMap['w'] = 0;
@@ -112,10 +114,10 @@ void CRSF::mapKeyToChannel(char key)
         break;
     /* TROTTLE */
     case 'r':
-        channels[2] -= 10;
+        channels[2] += 10;
         break;
     case 'f':
-        channels[2] += 10;
+        channels[2] -= 10;
         break;
     /* YAW */
     case 'q':
@@ -126,10 +128,10 @@ void CRSF::mapKeyToChannel(char key)
         break;
     /* ARM */
     case 'z':
-        channels[4] = 580;
+        channels[4] = 1600;
         break;
     case 'x':
-        channels[4] = 1600;
+        channels[4] = 580;
         break;
     case 'c':
         channels[2] = 120;
