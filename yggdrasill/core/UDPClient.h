@@ -1,6 +1,7 @@
 #pragma once
 
-#include "CeglePacket.h"
+#include "RotPacket.h"
+
 #include <string>
 #include <arpa/inet.h>
 
@@ -11,7 +12,7 @@ public:
 
     ~UDPClient();
 
-    void sendCeglePacket(CeglePacket packet);
+    void sendRotPacket(RotPacket packet);
     
 private:
     int sockfd;

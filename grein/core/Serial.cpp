@@ -116,9 +116,11 @@ int Serial::writeData(const unsigned char *data, int length) {
     }
 
     int bytes_written = write(fd, data, length);
+    
     if (bytes_written < 0) {
         std::cerr << "Failed to write data: " << strerror(errno) << std::endl;
         return -1;
     }
+
     return bytes_written;
 }

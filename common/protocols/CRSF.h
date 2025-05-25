@@ -1,7 +1,8 @@
 #pragma once
 
+#include "RotPacket.h"
+
 #include <cstdint>
-#include <unordered_map>
 #include <array>
 #include <vector>
 #include <unistd.h>
@@ -20,15 +21,21 @@ public:
     static constexpr int LINK_STATISTICS_PACKET_FREQUENCY = 3;
     static const uint8_t LINK_STATISTICS_PACKET[LINK_STATISTICS_PACKET_SIZE];
 
+    static constexpr int THROTTLE_INDEX = 2;
+    static constexpr int YAW_INDEX = 3;
+    static constexpr int PITCH_INDEX = 1;
+    static constexpr int ROLL_INDEX = 0;
+    static constexpr int ARM_INDEX = 4;
+
     CRSF();
-    void mapKeyToChannel(char key);
-    std::array<int, CRSF_CHANNELS_AMOUT> getChannels() const;
+
+    void set(RotPacket packet);
+
+    std::array<int, CRSF_CHANNELS_AMOUT> get() const;
     
-    const std::array<uint8_t, CRSF_SIZE>& pack();
+    const std::array<uint8_t, CRSF_SIZE> unpack();
 private:
     uint8_t computeCRC(const uint8_t* data, size_t length);
 
-    std::unordered_map<char, int> keyMap;
-    std::array<uint8_t, CRSF_SIZE> packet;
     std::array<int, CRSF_CHANNELS_AMOUT> channels;
 };
