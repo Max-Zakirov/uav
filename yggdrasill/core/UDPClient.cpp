@@ -19,17 +19,10 @@ UDPClient::~UDPClient() {
     close(sockfd);
 }
 
-void UDPClient::sendCeglePacket(CeglePacket packet) {
-    std::array<uint8_t, 2> data = packet.unpack();
+void UDPClient::sendRotPacket(RotPacket packet) {
+    auto data = packet.unpack();
 
     sendto(sockfd, data.data(), data.size(), MSG_CONFIRM, 
            (const struct sockaddr *)&servaddr, sizeof(servaddr));
-
-    char buffer[1024];
-    socklen_t len;
-    int n = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, 
-                     (struct sockaddr *)&servaddr, &len);
-    buffer[n] = '\0';
-    std::cout << "Server: " << buffer << std::endl;
 }
 

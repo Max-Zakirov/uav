@@ -1,6 +1,7 @@
 #pragma once
 
-#define SBUS_BAUDRATE 420000
+#define CRSF_BAUDRATE 400000
+#define SBUS_BAUDRATE 100000
 
 class Serial {
 public:
@@ -15,5 +16,4 @@ private:
     int fd;
     bool configurePort(const char *port);
     void closePort();
-
 };

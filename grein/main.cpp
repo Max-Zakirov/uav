@@ -1,8 +1,10 @@
-#include "CegleApp.h"
+#include "GreinCtrl.h"
+
+constexpr char UART_PORT[] = "/dev/ttyAMA0";
 
 /* TODO: Make try : catch + exceptions inside the code, instead of returns of ints and bools */
 int main() {
-    CegleApp app("192.168.3.1", 8080);
+    GreinCtrl app(8070, UART_PORT);
 
     app.run();
 
